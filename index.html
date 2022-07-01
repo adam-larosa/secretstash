@@ -1,0 +1,76 @@
+<html>
+
+    <head>
+        <title>I'm a Website!</title>
+        <style>
+            body {
+                background: black;
+                color: grey;
+                text-align: center;
+            }
+            h1 {
+                font-size: 100px
+            }
+            p {
+                color: red
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>hello world</h1>
+
+        <h3>make a secret</h3>
+        <form>
+            <input name="content"/>
+            <input type="submit"/>
+        </form>
+
+        <h2>here's what we know</h2>
+        <div id="container"></div>
+
+        <script>
+
+            function parseJSON(resp) {
+                return resp.json()
+            }
+
+            document.querySelector( 'h1' ).textContent = 'all the secrets!'
+        
+            const secretContainer = document.getElementById( 'container' )
+
+            const formElement = document.querySelector( 'form' )
+
+            formElement.addEventListener( 'submit', e => {
+                e.preventDefault()
+                fetch( 'http://localhost:3000/secrets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json'
+                    },
+                    body: JSON.stringify( {
+                        content: e.target.content.value
+                    } )
+                } )
+                    .then( parseJSON )
+                    .then( renderSecret )
+                formElement.reset()
+            } )
+
+            function renderSecret( secretObj ) {
+                const p = document.createElement( 'p' )
+                p.textContent = secretObj.content
+                secretContainer.append( p )
+            }
+
+            fetch( 'http://localhost:3000/secrets' )
+                .then( parseJSON )
+                .then( arrayOfSecretObjects => {
+                    arrayOfSecretObjects.forEach( renderSecret )
+                } )
+        
+        </script>
+    </body>
+
+</html>
